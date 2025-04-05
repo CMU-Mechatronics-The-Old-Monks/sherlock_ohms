@@ -1,29 +1,34 @@
-#ifndef DATA_PACKET_H
-#define DATA_PACKET_H
+#ifndef DATAPACKET_H
+#define DATAPACKET_H
 
-#include <Arduino.h>
+#include <vector>
+#include <cstdint>
 
 class DataPacket {
 public:
-    static const uint8_t START_BYTE = 0xAA;
-    static const uint8_t END_BYTE   = 0x55;
-
+    // Constructor with size specification
     DataPacket(uint8_t num_floats);
 
+    // Set the value at a specific index in the packet
     void set(uint8_t index, float value);
+
+    // Get the value at a specific index from the packet
     float get(uint8_t index) const;
 
-    uint8_t* serialize();                    // Call before sending
-    void deserialize(const uint8_t* buffer); // Call after receiving
+    // Serialize the packet data to a byte array with start and end markers
+    const uint8_t* serialize() const;
 
-    uint8_t byteLength() const;             // Total bytes (start + floats + end)
-    uint8_t dataLength() const;             // Only the float payload in bytes
+    // Deserialize data from a byte array
+    bool deserialize(const uint8_t* data);
+
+    // Return the byte length of the serialized packet
+    uint8_t byteLength() const;
 
 private:
-    uint8_t _num_floats;
-    float* _data;
-
-    uint8_t* _buffer; // raw byte buffer for sending/receiving
+    std::vector<float> _data;  // Storing the data in a vector
+    uint8_t _size;             // Number of floats expected in the packet
+    static constexpr uint8_t START_BYTE = 0xAA;  // Start byte marker
+    static constexpr uint8_t END_BYTE = 0xBB;    // End byte marker
 };
 
-#endif
+#endif  // DATAPACKET_H

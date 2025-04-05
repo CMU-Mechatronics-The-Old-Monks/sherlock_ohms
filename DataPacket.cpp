@@ -1,54 +1,51 @@
 #include "DataPacket.h"
-#include <string.h> // for memcpy
+#include <cstring>  // For memcpy
 
 DataPacket::DataPacket(uint8_t num_floats)
-    : _num_floats(num_floats)
-{
-    _data = new float[_num_floats];
-    _buffer = new uint8_t[byteLength()];
-
-    for (int i = 0; i < _num_floats; ++i) {
-        _data[i] = 0.0f;
-    }
-}
+    : _size(num_floats), _data(num_floats, 0.0f) {}
 
 void DataPacket::set(uint8_t index, float value) {
-    if (index >= _num_floats) return;
-    _data[index] = value;
+    if (index < _size) {
+        _data[index] = value;
+    }
 }
 
 float DataPacket::get(uint8_t index) const {
-    if (index >= _num_floats) return 0.0f;
-    return _data[index];
+    if (index < _size) {
+        return _data[index];
+    }
+    return 0.0f;  // Default value in case of out-of-bounds access
 }
 
-uint8_t* DataPacket::serialize() {
-    _buffer[0] = START_BYTE;
+const uint8_t* DataPacket::serialize() const {
+    static uint8_t buffer[256];  // Assuming max packet size
+    uint8_t* ptr = buffer;
 
-    // Copy each float into the buffer
-    for (int i = 0; i < _num_floats; ++i) {
-        memcpy(&_buffer[1 + i * sizeof(float)], &_data[i], sizeof(float));
-    }
+    // Add start byte
+    *ptr++ = START_BYTE;
 
-    _buffer[1 + _num_floats * sizeof(float)] = END_BYTE;
-    return _buffer;
+    // Copy the data into the buffer
+    std::memcpy(ptr, _data.data(), _data.size() * sizeof(float));
+    ptr += _data.size() * sizeof(float);
+
+    // Add end byte
+    *ptr = END_BYTE;
+
+    return buffer;
 }
 
-void DataPacket::deserialize(const uint8_t* buffer) {
-    // Optionally: check start/end bytes before trusting
-    if (buffer[0] != START_BYTE || buffer[byteLength() - 1] != END_BYTE) {
-        return; // Invalid packet
-    }
 
-    for (int i = 0; i < _num_floats; ++i) {
-        memcpy(&_data[i], &buffer[1 + i * sizeof(float)], sizeof(float));
+bool DataPacket::deserialize(const uint8_t* data) {
+    if (data[0] != START_BYTE || data[byteLength() - 1] != END_BYTE) {
+        return false;
     }
+    std::memcpy(_data.data(), data + 1, _data.size() * sizeof(float));
+    return true;
 }
+
 
 uint8_t DataPacket::byteLength() const {
-    return 1 + (_num_floats * sizeof(float)) + 1; // start + payload + end
+    // 1 byte for start, 1 byte for end, and size for data
+    return static_cast<uint8_t>(_data.size() * sizeof(float) + 2);
 }
 
-uint8_t DataPacket::dataLength() const {
-    return _num_floats * sizeof(float);
-}
