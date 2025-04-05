@@ -11,20 +11,18 @@ Wheel::Wheel(
     float kd, 
     float loop_dt,
     bool reverse_direction,
-    float gear_reduction,
+    float gear_reduction
     )
     : _encoder(A_pin, B_pin, reverse_direction),
       _motor(pwm_cw_pin, pwm_ccw_pin, enable_pin),
       _pid(kp, ki, kd, loop_dt),
       _last_pwm_output(0),
       _reverse(reverse_direction),
-      _gear_reduction(gear_reduction);
-{}
-
-void Wheel::begin() {
-    _encoder.begin();
-    _motor.begin();
+      _gear_reduction(gear_reduction)
+{
+    // Constructor body
 }
+
 
 void Wheel::update(float target_velocity_rad_s) {
     _encoder.update();
@@ -50,3 +48,9 @@ float Wheel::getAngularVelocity() {
 float Wheel::getPWMOutput() {
     return _last_pwm_output;
 }
+
+void Wheel::begin() {
+    _encoder.begin();
+    _motor.begin();
+}
+
