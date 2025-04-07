@@ -1,6 +1,7 @@
 #ifndef DATAPACKET_H
 #define DATAPACKET_H
 
+#include <Arduino.h>
 #include <vector>
 #include <cstdint>
 

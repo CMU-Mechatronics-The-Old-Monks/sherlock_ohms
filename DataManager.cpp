@@ -17,27 +17,24 @@ void DataManager::parseData(float* output, uint8_t max_length) {
     }
 }
 
-void DataManager::transmitData(HardwareSerial& serial) {
+void DataManager::transmitData(Stream& serial) {
     serial.write(_packet.serialize(), _packet.byteLength());
 }
 
-bool DataManager::receiveData(HardwareSerial& serial) {
+bool DataManager::receiveData(Stream& serial) {
     if (serial.available() < _packet.byteLength()) return false;
 
     uint8_t buf[_packet.byteLength()];
     serial.readBytes(buf, _packet.byteLength());
 
-    return _packet.deserialize(buf); // validate result
+    return _packet.deserialize(buf); // return true only if valid packet
 }
 
 uint8_t DataManager::getPacketSize() const {
     return _packet.byteLength();
 }
 
-void DataManager::packAndTransmitData(const std::vector<float>& values, HardwareSerial& serial) {
-    // Pack the data into the packet
+void DataManager::packAndTransmitData(const std::vector<float>& values, Stream& serial) {
     packData(values);
-
-    // Transmit the data
     transmitData(serial);
 }

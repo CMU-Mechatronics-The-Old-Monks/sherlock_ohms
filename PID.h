@@ -6,23 +6,25 @@ public:
     PID(float kp, 
         float ki, 
         float kd, 
+        float kf,
         float dt,
-        float output_min = -255.0, float output_max = 255.0,
-        float derivative_filter_alpha = 1.0, 
-        float integral_limit = 1000.0
+        float output_min = -150.0, 
+        float output_max = 150.0,
+        float integral_limit = 1000.0,
+        float derivative_filter_alpha = 1.0
     );
 
     float update(float setpoint, float measurement);
     void reset();
 
     // Gain setters
-    void setGains(float kp, float ki, float kd);
+    void setGains(float kp, float ki, float kd, float kf);
     void setOutputLimits(float min_val, float max_val);
     void setDerivativeFilterAlpha(float alpha);
     void setIntegralLimit(float limit);
 
 private:
-    float _kp, _ki, _kd;
+    float _kp, _ki, _kd, _kf;
     float _dt;
 
     float _output_min, _output_max;

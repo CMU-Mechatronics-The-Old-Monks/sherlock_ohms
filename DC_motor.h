@@ -5,7 +5,7 @@
 
 class DC_motor {
 public:
-    DC_motor(uint8_t pwm_cw_pin, uint8_t pwm_ccw_pin, uint8_t enable_pin = 255, int deadband = 10);
+    DC_motor(uint8_t pwm_cw_pin, uint8_t pwm_ccw_pin, uint8_t enable_pin = 255, int deadband = 5);
 
     void begin();
     void setPWM(int pwm); // -255 to 255, handles direction and deadband

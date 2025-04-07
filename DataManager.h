@@ -17,16 +17,18 @@ public:
     void parseData(float* output, uint8_t max_length);
 
     // Transmit data to serial
-    void transmitData(HardwareSerial& serial);
+    void transmitData(Stream& serial);
+
+
 
     // Receive data from serial
-    bool receiveData(HardwareSerial& serial);
+    bool receiveData(Stream& serial);
 
     // Get the byte size of the packet
     uint8_t getPacketSize() const;
 
     // Helper function to pack and transmit data in one call
-    void packAndTransmitData(const std::vector<float>& values, HardwareSerial& serial);
+    void packAndTransmitData(const std::vector<float>& values, Stream& serial);
 
 private:
     DataPacket _packet;  // Packet instance to handle data

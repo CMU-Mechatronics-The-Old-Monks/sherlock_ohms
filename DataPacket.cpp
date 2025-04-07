@@ -1,6 +1,7 @@
 #include "DataPacket.h"
 #include <cstring>  // For memcpy
 
+
 DataPacket::DataPacket(uint8_t num_floats)
     : _size(num_floats), _data(num_floats, 0.0f) {}
 

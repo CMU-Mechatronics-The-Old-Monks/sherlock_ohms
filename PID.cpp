@@ -4,6 +4,7 @@ PID::PID(
     float kp, 
     float ki, 
     float kd, 
+    float kf,
     float dt,
     float output_min, 
     float output_max,
@@ -13,29 +14,42 @@ PID::PID(
     : _kp(kp), 
       _ki(ki), 
       _kd(kd), 
+      _kf(kf),
       _dt(dt),
       _output_min(output_min), 
       _output_max(output_max),
-      _filter_alpha(derivative_filter_alpha), 
       _integral_limit(integral_limit),
+      _filter_alpha(derivative_filter_alpha), 
       _prev_error(0.0), 
       _integral(0.0), 
       _prev_derivative(0.0) {}
 
 float PID::update(float setpoint, float measurement) {
-    float error = setpoint - measurement;
+
+    float error_scaling = 1.0;
+    float error = error_scaling*(setpoint - measurement);
+   
     float derivative = (error - _prev_error) / _dt;
 
+    float ff = _kf * setpoint;
+   
+
     // Filter derivative
-    derivative = _filter_alpha * derivative + (1 - _filter_alpha) * _prev_derivative;
+    // if (_kd > 0.0f) {
+    //     derivative = _filter_alpha * derivative + (1 - _filter_alpha) * _prev_derivative;
+    // } else {
+    //     derivative = 0.0f;
+    // }
+
+
 
     _integral += error * _dt;
 
     // Anti-windup
     _integral = clamp(_integral, -_integral_limit, _integral_limit);
 
-    float output = _kp * error + _ki * _integral + _kd * derivative;
-
+    // float output = _kp * error + _ki * _integral + _kd * derivative;
+    float output = _kp * error + _kd * derivative + _ki * _integral + ff;
     // Clamp output
     output = clamp(output, _output_min, _output_max);
 
@@ -51,10 +65,11 @@ void PID::reset() {
     _prev_derivative = 0.0;
 }
 
-void PID::setGains(float kp, float ki, float kd) {
+void PID::setGains(float kp, float ki, float kd,  float kf) {
     _kp = kp;
     _ki = ki;
     _kd = kd;
+    _kf = kf;
 }
 
 void PID::setOutputLimits(float min_val, float max_val) {

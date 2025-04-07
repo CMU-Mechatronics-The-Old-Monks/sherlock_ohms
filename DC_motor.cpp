@@ -11,7 +11,7 @@ DC_motor::DC_motor(
       _enable_pin(enable_pin),
       _deadband(deadband), 
       _enabled(false), 
-      _timeout_ms(1000),
+      _timeout_ms(10000),
       _timeout_flag(false)
 {
     _has_enable = (_enable_pin != 255); // 255 means no enable pin given
@@ -22,9 +22,20 @@ void DC_motor::begin() {
     pinMode(_pwm_ccw_pin, OUTPUT);
     if (_has_enable) {
         pinMode(_enable_pin, OUTPUT);
-        digitalWrite(_enable_pin, HIGH);
+        // digitalWrite(_enable_pin, HIGH);
     }
     _last_command_time = millis();
+}
+
+void DC_motor::enable() {
+    if (_has_enable) digitalWrite(_enable_pin, HIGH);
+    _enabled = true;
+}
+
+void DC_motor::disable() {
+    applyPWM(0);
+    if (_has_enable) digitalWrite(_enable_pin, LOW);
+    _enabled = false;
 }
 
 void DC_motor::setPWM(int pwm) {
@@ -34,8 +45,9 @@ void DC_motor::setPWM(int pwm) {
 
     // Deadband check
     if (abs(pwm) < _deadband) {
-        applyPWM(0);
-        return;
+        //applyPWM(0);
+        pwm = 0;
+        //return;
     }
 
     pwm = constrain(pwm, -255, 255);
@@ -53,17 +65,6 @@ void DC_motor::applyPWM(int pwm) {
         analogWrite(_pwm_cw_pin, 0);
         analogWrite(_pwm_ccw_pin, 0);
     }
-}
-
-void DC_motor::disable() {
-    applyPWM(0);
-    if (_has_enable) digitalWrite(_enable_pin, LOW);
-    _enabled = false;
-}
-
-void DC_motor::enable() {
-    if (_has_enable) digitalWrite(_enable_pin, HIGH);
-    _enabled = true;
 }
 
 void DC_motor::update() {

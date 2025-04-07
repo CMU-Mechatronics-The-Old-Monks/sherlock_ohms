@@ -16,15 +16,19 @@ public:
         float kp, 
         float ki, 
         float kd, 
+        float kf,
         float loop_dt,
         bool reverse_direction = false,
         float gear_reduction = 50
     );
 
     void begin();
+    void enable();
+    void disable();
     void update(float target_velocity_rad_s); // target velocity [rad/s]
     void stop();
     float getAngularVelocity(); // current angular velocity [rad/s]
+    float getAngle();
     float getPWMOutput();       // last PWM applied
 
 private:

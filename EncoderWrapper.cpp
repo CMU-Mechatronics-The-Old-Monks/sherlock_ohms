@@ -33,12 +33,15 @@ void EncoderWrapper::update() {
     long current_count = _encoder.read();
 
     long delta_counts = current_count - _last_count;
-    if (_reverse) delta_counts *= -1;
+  
 
     float dt = (now - _last_update_time) / 1e6;
     if (dt <= 0) return;
 
+    
     float vel = delta_counts / dt;
+    if (_reverse) vel *= -1;
+
     computeFilteredVelocity(vel);
 
     _last_update_time = now;
@@ -61,12 +64,21 @@ float EncoderWrapper::getVelocity() {
     for (unsigned int i = 0; i < _buffer_size; ++i) {
         sum += _velocity_buffer[i];
     }
+
     return sum / _buffer_size;
+    
 }
 
 float EncoderWrapper::getAngularVelocity() { // [instantaneous filtered radians / s]
+    // float counts_per_sec = getVelocity();
+    // return (counts_per_sec / _count_per_revolution) * 2.0f * PI;
+
     float counts_per_sec = getVelocity();
-    return (counts_per_sec / _count_per_revolution) * 2.0f * PI;
+    float angular_velocity = (counts_per_sec / _count_per_revolution) * 2.0f * PI;
+
+    return angular_velocity;
+
+    //return _reverse ? -angular_velocity : angular_velocity;
 }
 
 long EncoderWrapper::getCounts() {

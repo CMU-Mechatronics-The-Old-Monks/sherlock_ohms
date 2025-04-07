@@ -5,7 +5,7 @@
 
 class EncoderWrapper {
 public:
-    EncoderWrapper(uint8_t A_pin, uint8_t B_pin, bool reverse = false, unsigned int buffer_size = 5, float count_per_revolution = 48.0);
+    EncoderWrapper(uint8_t A_pin, uint8_t B_pin, bool reverse = false, unsigned int buffer_size = 3, float count_per_revolution = 64.0);
     void begin(); // Optionally store time
     void update(); // Call periodically to compute velocity
     float getVelocity(); // Filtered velocity in counts/sec
