@@ -1,26 +1,23 @@
 #include "LoadCellSensor.h"
 #include <Arduino.h>
 
-#define DOUT 26
-#define CLK 27
-
-LoadCellSensor::LoadCellSensor(float calibrationFactor)
-    : calibrationFactor(calibrationFactor), weight(0.0f) {}
+LoadCellSensor::LoadCellSensor() : _scale(DOUT_PIN, SCK_PIN), _weight(0.0f) {}
 
 void LoadCellSensor::begin() {
-    scale.begin(DOUT, CLK);
-    scale.set_scale(calibrationFactor);
-    scale.tare();
+    _scale.begin();
+    _scale.start(2000);  // Wait for startup
+    _scale.setCalFactor(1000.0);  // Calibration factor – adjust this
+    Serial.println("Load cell initialized (HX711_ADC)");
 }
 
 void LoadCellSensor::update() {
-    if (scale.is_ready()) {
-        weight = scale.get_units();
-    } else {
-        Serial.println("HX711 not found.");
-    }
+    _scale.update();  // Must call repeatedly
+
+    // optionally smooth it out over time:
+    _weight = _scale.getData();
 }
 
 float LoadCellSensor::getWeight() const {
-    return weight;
+    return _weight;
 }
+

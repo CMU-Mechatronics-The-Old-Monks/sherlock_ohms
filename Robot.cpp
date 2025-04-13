@@ -60,6 +60,10 @@ void Robot::begin() {
     for (int i = 0; i < 4; ++i) {
         _wheels[i]->begin();
     }
+    _loadCell.begin();
+    _voltageSensor.begin();
+    _tofSensor.begin();
+
 }
 
 void Robot::enableWheels() {
@@ -78,6 +82,22 @@ void Robot::update() {
     for (int i = 0; i < 4; ++i) {
         _wheels[i]->update(_target_wheel_velocities[i]);
     }
+    _loadCell.update();
+    float w = _loadCell.getWeight();
+
+// Optional print for debug
+    Serial.print("Weight: ");
+    Serial.print(w, 5);
+    Serial.println(" g");
+
+    _tofSensor.update();
+    uint16_t d = _tofSensor.getDistance();
+
+    Serial.print("Distance: ");
+    Serial.print(d);
+    Serial.println(" mm");
+
+
 }
 
 void Robot::setWheelVelocities(float v_fl, float v_fr, float v_rl, float v_rr) {

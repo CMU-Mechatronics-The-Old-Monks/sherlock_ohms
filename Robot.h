@@ -2,6 +2,10 @@
 #define ROBOT_H
 
 #include "Wheel.h"
+#include "LoadCellSensor.h"
+#include "VoltageSensor.h"
+#include "VL53L1XSensor.h"
+
 
 class Robot {
 public:
@@ -23,6 +27,7 @@ public:
     void updateSoftStop();
     bool isSoftStopping();
     bool isStopped();
+
 
 private:
     Wheel* _wheels[4]; // 0 = FL, 1 = FR, 2 = RL, 3 = RR
@@ -48,7 +53,8 @@ private:
     unsigned long _last_soft_stop_time;
     bool _is_stopped;
 
-    
+    LoadCellSensor _loadCell;
+    VoltageSensor _voltageSensor;
 };
 
 #endif
