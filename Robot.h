@@ -3,7 +3,7 @@
 
 #include "Wheel.h"
 #include "LoadCellSensor.h"
-#include "VoltageSensor.h"
+#include "VSensor.h"
 
 
 class Robot {
@@ -53,7 +53,7 @@ private:
     bool _is_stopped;
 
     LoadCellSensor _loadCell;
-    VoltageSensor _voltageSensor;
+    VSensor vsensor;
 };
 
 #endif

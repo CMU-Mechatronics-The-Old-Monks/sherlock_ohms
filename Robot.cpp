@@ -1,9 +1,11 @@
 #include "Robot.h"
 #include "LoadCellSensor.h"
-#include "VoltageSensor.h"
+#include "VSensor.h"
 #include "tof.h"
 
-Robot::Robot() {
+Robot::Robot() 
+    : vsensor(5.0, 38, 200)
+  {
     _wheels[0] = new Wheel( // FL
         FL_A,       // Encoder A pin
         FL_B,       // Encoder B pin
@@ -57,14 +59,15 @@ Robot::Robot() {
         false
     ); 
     for (int i = 0; i < 4; ++i) _target_wheel_velocities[i] = 0.0;
-}
+  }
+
 
 void Robot::begin() {
     for (int i = 0; i < 4; ++i) {
         _wheels[i]->begin();
     }
     _loadCell.begin();
-    _voltageSensor.begin();
+    vsensor.begin();
 
 }
 
@@ -84,13 +87,24 @@ void Robot::update() {
     for (int i = 0; i < 4; ++i) {
         _wheels[i]->update(_target_wheel_velocities[i]);
     }
-    _loadCell.update();
-    float w = _loadCell.getWeight();
+    // _loadCell.update();
+    // float w = _loadCell.getWeight();
 
-// Optional print for debug
-    Serial.print("Weight: ");
-    Serial.print(w, 5);
-    Serial.println(" g");
+// // Optional print for debug
+//     Serial.print("Weight: ");
+//     Serial.print(w, 5);
+//     Serial.println(" g");
+
+    vsensor.update();
+    float trueACVoltage = vsensor.getTrueVoltage();  // Calibrated value
+
+    vsensor.setCalibration(0.87, 100.0);  // Still used for getTrueVoltage()
+
+    float vNorm = vsensor.getNormalizedVoltage(2.25, 5.0);  // Magnitude only
+    Serial.print("Normalized [0–5]: ");
+    Serial.println(vNorm);
+    Serial.print("  |  True AC Voltage: ");
+    Serial.println(trueACVoltage);
 
 }
 
