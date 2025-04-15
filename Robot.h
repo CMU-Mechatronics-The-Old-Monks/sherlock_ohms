@@ -4,7 +4,6 @@
 #include "Wheel.h"
 #include "LoadCellSensor.h"
 #include "VoltageSensor.h"
-#include "VL53L1XSensor.h"
 
 
 class Robot {

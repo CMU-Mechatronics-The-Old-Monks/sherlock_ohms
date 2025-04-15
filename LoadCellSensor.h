@@ -11,8 +11,8 @@ public:
     float getWeight() const;
 
 private:
-    static constexpr int DOUT_PIN = 37;
-    static constexpr int SCK_PIN = 36;
+    static constexpr int DOUT_PIN = 15;
+    static constexpr int SCK_PIN = 14;
     float _weight;
     HX711_ADC _scale;
 };
