@@ -2,6 +2,7 @@
 #include "LoadCellSensor.h"
 #include "VSensor.h"
 #include "tof.h"
+#include "IMU.h"
 
 Robot::Robot() 
     : vsensor(5.0, 38, 200)
@@ -68,7 +69,7 @@ void Robot::begin() {
     }
     _loadCell.begin();
     vsensor.begin();
-
+    imu.begin();
 }
 
 void Robot::enableWheels() {
@@ -100,11 +101,16 @@ void Robot::update() {
 
     vsensor.setCalibration(0.87, 100.0);  // Still used for getTrueVoltage()
 
-    float vNorm = vsensor.getNormalizedVoltage(2.25, 5.0);  // Magnitude only
-    Serial.print("Normalized [0–5]: ");
-    Serial.println(vNorm);
-    Serial.print("  |  True AC Voltage: ");
-    Serial.println(trueACVoltage);
+    // float vNorm = vsensor.getNormalizedVoltage(2.25, 5.0);  // Magnitude only
+    // Serial.print("Normalized [0–5]: ");
+    // Serial.println(vNorm);
+    // Serial.print("  |  True AC Voltage: ");
+    // Serial.println(trueACVoltage);
+
+    imu.update();
+
+    // std::vector<float> imu_values = { vx, vy, yaw };
+    // imuData.packAndTransmitData(imu_values, Serial);
 
 }
 
@@ -207,7 +213,28 @@ bool Robot::isStopped() {
     return true;
 }
 
+float Robot::getBodyVx() {
+    return imu.getVx();
+}
 
+float Robot::getBodyVy() {
+    return imu.getVy();
+}
+
+float Robot::getYaw() {
+    return imu.getYaw();
+}
+
+void Robot::printIMU() {
+    Serial.print("Vx: ");
+    Serial.print(getBodyVx(), 3);  // 3 decimal places
+
+    Serial.print("  Vy: ");
+    Serial.print(getBodyVy(), 3);
+
+    Serial.print("  Yaw: ");
+    Serial.println(getYaw(), 2);
+}
 
 // #include "Robot.h"
 

@@ -1,11 +1,14 @@
 #include "Robot.h"
 #include "DataManager.h"
+#include "BNO055.h"
+#include "DataManager.h"
+#include "DataPacket.h"
 
 Robot robot;
 
 // Data communication setup
 DataManager rx_data(4);  // expecting 4 floats from Pi
-DataManager tx_data(4);  // optional: send back 4 floats
+DataManager tx_data(7);  // 7 floats: w1, w2, w3, w4, vx, vy, yaw
 
 unsigned long last_print_time = 0;
 
@@ -16,14 +19,15 @@ void setup() {
     robot.begin();
     robot.enableWheels();
     Serial.println("Robot initialized.");
+
 }
 
 void loop() {
     robot.update();
     //robot.updateSoftStop();
-
+    robot.printIMU(); 
     //robot.setWheelVelocities(2.0,2.0,2.0,2.0);
-
+    std::vector<float> telemetry;
     // Check for incoming velocity commands from Pi
     if (rx_data.receiveData(Serial)) {
         float wheel_cmds[4];
@@ -41,11 +45,17 @@ void loop() {
         // float* feedback = robot.getWheelAngularVelocities();
         // std::vector<float> fb(feedback, feedback + 4);
         // tx_data.packAndTransmitData(fb, Serial);
+        telemetry.push_back(robot.getWheelVelM1());
+        telemetry.push_back(robot.getWheelVelM2());
+        telemetry.push_back(robot.getWheelVelM3());
+        telemetry.push_back(robot.getWheelVelM4());
         
-        
-        // Echo the exact same commands back to the Pi
-        std::vector<float> echoed(wheel_cmds, wheel_cmds + 4);
-        tx_data.packAndTransmitData(echoed, Serial);
+        telemetry.push_back(robot.getBodyVx());
+        telemetry.push_back(robot.getBodyVy());
+        telemetry.push_back(robot.getYaw());
+
+        tx_data.packAndTransmitData(telemetry, Serial)
+
       }
 
     

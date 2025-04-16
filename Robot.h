@@ -4,6 +4,8 @@
 #include "Wheel.h"
 #include "LoadCellSensor.h"
 #include "VSensor.h"
+#include "DataManager.h"
+#include "IMU.h"
 
 
 class Robot {
@@ -26,6 +28,12 @@ public:
     void updateSoftStop();
     bool isSoftStopping();
     bool isStopped();
+    
+    float getBodyVx();   // Get body velocity X
+    float getBodyVy();   // Get body velocity Y
+    float getYaw();      // Get yaw angle
+    void printIMU();  // Optional: rename to printData or printState
+    float getWheelAngularVelocity(int wheelIndex);  // 0–3
 
 
 private:
@@ -54,6 +62,8 @@ private:
 
     LoadCellSensor _loadCell;
     VSensor vsensor;
+    IMU imu; 
+    
 };
 
 #endif
