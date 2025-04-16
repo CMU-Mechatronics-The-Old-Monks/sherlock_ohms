@@ -45,16 +45,19 @@ void loop() {
         // float* feedback = robot.getWheelAngularVelocities();
         // std::vector<float> fb(feedback, feedback + 4);
         // tx_data.packAndTransmitData(fb, Serial);
-        telemetry.push_back(robot.getWheelVelM1());
-        telemetry.push_back(robot.getWheelVelM2());
-        telemetry.push_back(robot.getWheelVelM3());
-        telemetry.push_back(robot.getWheelVelM4());
-        
+        // Add all 4 wheels
+        float* wheelVels = robot.getWheelAngularVelocities();
+        for (int i = 0; i < 4; ++i) {
+          telemetry.push_back(wheelVels[i]);
+        }
+
         telemetry.push_back(robot.getBodyVx());
         telemetry.push_back(robot.getBodyVy());
         telemetry.push_back(robot.getYaw());
 
-        tx_data.packAndTransmitData(telemetry, Serial)
+
+
+tx_data.packAndTransmitData(telemetry, Serial);
 
       }
 

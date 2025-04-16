@@ -33,7 +33,7 @@ public:
     float getBodyVy();   // Get body velocity Y
     float getYaw();      // Get yaw angle
     void printIMU();  // Optional: rename to printData or printState
-    float getWheelAngularVelocity(int wheelIndex);  // 0–3
+    //float getWheelAngularVelocity(int wheelIndex);  // 0–3
 
 
 private:
