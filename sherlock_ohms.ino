@@ -25,7 +25,7 @@ void setup() {
 void loop() {
     robot.update();
     //robot.updateSoftStop();
-    robot.printIMU(); 
+    // robot.printIMU(); 
     //robot.setWheelVelocities(2.0,2.0,2.0,2.0);
     std::vector<float> telemetry;
     // Check for incoming velocity commands from Pi
@@ -57,7 +57,7 @@ void loop() {
 
 
 
-tx_data.packAndTransmitData(telemetry, Serial);
+        tx_data.packAndTransmitData(telemetry, Serial);
 
       }
 
