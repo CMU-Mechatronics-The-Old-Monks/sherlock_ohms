@@ -7,7 +7,7 @@ void LoadCellSensor::begin() {
     _scale.begin();
     _scale.start(2000);  // Wait for startup
     _scale.setCalFactor(1000.0);  // Calibration factor – adjust this
-    Serial.println("Load cell initialized (HX711_ADC)");
+    //Serial.println("Load cell initialized (HX711_ADC)");
 }
 
 void LoadCellSensor::update() {

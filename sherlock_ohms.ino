@@ -10,16 +10,23 @@ Robot robot;
 DataManager rx_data(4);  // expecting 4 floats from Pi
 DataManager tx_data(7);  // 7 floats: w1, w2, w3, w4, vx, vy, yaw
 
-unsigned long last_print_time = 0;
+// Debug LED pins
+const int LED_ENABLE = 13;  // Shows if motors are enabled
+const int LED_PWM = 12;     // Blinks when PWM is active
 
 void setup() {
     Serial.begin(115200);
     while (!Serial); // Wait for Serial connection
 
+    // Setup debug LEDs
+    pinMode(LED_ENABLE, OUTPUT);
+    pinMode(LED_PWM, OUTPUT);
+    digitalWrite(LED_ENABLE, LOW);
+    digitalWrite(LED_PWM, LOW);
+
     robot.begin();
     robot.enableWheels();
-    Serial.println("Robot initialized.");
-
+    digitalWrite(LED_ENABLE, HIGH);  // Turn on when motors are enabled
 }
 
 void loop() {
@@ -39,29 +46,26 @@ void loop() {
             wheel_cmds[2],
             wheel_cmds[3]
         );
-        //robot.setWheelVelocities(2.0,2.0,2.0,2.0);
 
-        // Optional: echo back wheel velocities (filtered/actual)
-        // float* feedback = robot.getWheelAngularVelocities();
-        // std::vector<float> fb(feedback, feedback + 4);
-        // tx_data.packAndTransmitData(fb, Serial);
-        // Add all 4 wheels
-        float* wheelVels = robot.getWheelAngularVelocities();
-        for (int i = 0; i < 4; ++i) {
-          telemetry.push_back(wheelVels[i]);
-        }
+        // Blink LED when PWM is active
+        // float* pwm = robot.getWheelPWMValues();
+        // bool any_pwm = false;
+        // for(int i = 0; i < 4; i++) {
+        //     if(abs(pwm[i]) > 0) {
+        //         any_pwm = true;
+        //         break;
+        //     }
+        // }
+        // digitalWrite(LED_PWM, any_pwm ? HIGH : LOW);
 
+        // Send telemetry back
+        std::vector<float> telemetry(robot.getWheelAngularVelocities(),
+                             robot.getWheelAngularVelocities() + 4);
         telemetry.push_back(robot.getBodyVx());
         telemetry.push_back(robot.getBodyVy());
         telemetry.push_back(robot.getYaw());
-
-
-
         tx_data.packAndTransmitData(telemetry, Serial);
-
-      }
-
-    
+    }
 
     delay(10); // ~100 Hz loop
 }

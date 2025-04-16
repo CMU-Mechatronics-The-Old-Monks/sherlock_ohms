@@ -96,18 +96,36 @@ void Robot::update() {
 //     Serial.print(w, 5);
 //     Serial.println(" g");
 
-    vsensor.update();
-    float trueACVoltage = vsensor.getTrueVoltage();  // Calibrated value
+    // vsensor.update();
+    // float trueACVoltage = vsensor.getTrueVoltage();  // Calibrated value
 
-    vsensor.setCalibration(0.87, 100.0);  // Still used for getTrueVoltage()
+    // vsensor.setCalibration(0.87, 100.0);  // Still used for getTrueVoltage()
 
     // float vNorm = vsensor.getNormalizedVoltage(2.25, 5.0);  // Magnitude only
     // Serial.print("Normalized [0–5]: ");
     // Serial.println(vNorm);
     // Serial.print("  |  True AC Voltage: ");
     // Serial.println(trueACVoltage);
+    vsensor.update();
+    float trueACVoltage = vsensor.getTrueVoltage();  // Calibrated value
 
-    imu.update();
+    // Set calibration (still needed internally)
+    vsensor.setCalibration(0.87, 100.0);
+
+    // Get normalized voltage (0 to 5V)
+    float vNorm = vsensor.getNormalizedVoltage(2.25, 5.0);
+
+    // Blink Teensy LED if voltage exceeds 4.5V
+    if ((vNorm > 2.5 && vNorm < 4.0) || (vNorm < 2.5 && vNorm > 1.0)) {
+    digitalWrite(LED_BUILTIN, HIGH);  // LED on
+    } 
+    else {
+    digitalWrite(LED_BUILTIN, LOW);   // LED off
+    }
+    Serial.print("Normalized [0–5]: ");
+    Serial.println(vNorm);
+
+    // imu.update();
 
     // std::vector<float> imu_values = { vx, vy, yaw };
     // imuData.packAndTransmitData(imu_values, Serial);
